@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CiaaTopUp - Admin Login & Kelola Produk</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0; padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+    }
+    .container {
+      max-width: 440px;
+      width: 100%;
+    }
+    h1, h2, h3 {
+      margin: 0 0 20px 0;
+    }
+    button, .button-like {
+      cursor: pointer;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-size: 1rem;
+    }
+    button:focus, .button-like:focus {
+      outline: 3px solid #7253f7;
+      outline-offset: 2px;
+    }
+    .dark-panel {
+      background-color: #1f1f2e;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 12px rgba(110, 95, 230, 0.7);
+    }
+    button.primary {
+      background-color: #6e5fe6;
+      color: #fff;
+    }
+    button.primary:hover, button.primary:focus {
+      background-color: #574acc;
+    }
+    button.secondary {
+      background-color: #3a3a4a;
+      color: #ccc;
+    }
+    button.secondary:hover, button.secondary:focus {
+      background-color: #575777;
+      color: white;
+    }
+    button.logout {
+      background-color: #d63c3c;
+      color: white;
+      width: 100%;
+    }
+    button.logout:hover, button.logout:focus {
+      background-color: #a02b2b;
+    }
+    .page {
+      display: none;
+      outline: none;
+    }
+    .page.active {
+      display: block;
+    }
+    .card {
+      background-color: #181826;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      color: #ccc;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(55, 53, 129, 0.45);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .card-icon {
+      font-size: 32px;
+      color: #6e5fe6;
+      flex-shrink: 0;
+      width: 40px;
+      text-align: center;
+    }
+    .card:hover, .card:focus {
+      background-color: #7253f7;
+      color: white;
+      outline: none;
+    }
+    .card small {
+      display: block;
+      font-weight: 300;
+      font-size: 0.85rem;
+      margin-top: 4px;
+      color: #b8b7d6;
+      line-height: 1.2;
+    }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .category-button {
+      background-color: #252536;
+      color: #bbb;
+      border-radius: 12px;
+      padding: 18px 0;
+      font-weight: 600;
+      font-size: 1rem;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(73, 70, 126, 0.5);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    .category-button:hover, .category-button:focus {
+      background-color: #6e5fe6;
+      color: white;
+      outline: none;
+    }
+    .products-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .product-item {
+      background-color: #232332;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: #ccc;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    .product-item:hover, .product-item:focus {
+      background-color: #7253f7;
+      color: white;
+      outline: none;
+    }
+    .product-price {
+      color: #b79eff;
+      margin-left: 10px;
+      white-space: nowrap;
+    }
+    .admin-panel {
+      background-color: white;
+      color: #222;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 14px rgba(0,0,0,0.15);
+    }
+    .admin-panel label {
+      font-weight: 600;
+      margin: 12px 0 5px;
+      display: block;
+    }
+    .admin-panel input, .admin-panel textarea, .admin-panel select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .admin-panel textarea {
+      resize: vertical;
+    }
+    .admin-panel input::placeholder,
+    .admin-panel textarea::placeholder {
+      font-style: italic;
+      color: #999;
+    }
+    .payment-panel {
+      background-color: #181826;
+      border-radius: 12px;
+      padding: 20px;
+      color: white;
+      box-shadow: 0 0 18px rgba(110, 95, 230, 0.6);
+      text-align: center;
+    }
+    .payment-title {
+      margin-bottom: 15px;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+    #qrcode {
+      margin: 20px auto;
+      width: 200px; height: 200px;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+    }
+    .payment-info {
+      font-weight: 600;
+      margin: 10px 0;
+      font-size: 1.1rem;
+      color: #b8b7d6;
+    }
+    .payment-info strong {
+      color: #c5a8ff;
+      user-select: text;
+    }
+    .countdown {
+      font-family: 'Consolas', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #b7a0ff;
+      margin-bottom: 20px;
+    }
+    .status-box {
+      background-color: #3a3a56;
+      border-radius: 14px;
+      padding: 12px;
+      color: #94a3b8;
+      font-style: italic;
+      font-weight: 600;
+    }
+    nav.breadcrumbs {
+      font-size: 0.9rem;
+      color: #8888aa;
+      margin-bottom: 16px;
+      user-select: none;
+    }
+    nav.breadcrumbs span {
+      cursor: pointer;
+      color: #aaaaff;
+      text-decoration: underline;
+    }
+    nav.breadcrumbs span:hover {
+      color: #debafd;
+    }
+    .product-item .delete-btn {
+      background-color: #d63c3c;
+      border-radius: 10px;
+      color: white;
+      border: none;
+      font-weight: 700;
+      padding: 6px 12px;
+      margin-left: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .product-item .delete-btn:hover, .product-item .delete-btn:focus {
+      background-color: #a02828;
+      outline: none;
+    }
+    .login-box {
+      background-color: #1f1f2e;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 0 15px rgba(110, 95, 230, 0.75);
+      max-width: 380px;
+      margin: auto;
+    }
+    .login-box h2 {
+      margin-bottom: 20px;
+      color: white;
+    }
+    .login-box input[type="text"], .login-box input[type="password"] {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1rem;
+    }
+    .login-box button.primary {
+      width: 100%;
+    }
+    .error-message {
+      color: #ff6666;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: none;
+    }
+    @media (max-width: 450px) {
+      .category-grid {
+        grid-template-columns: 1fr;
+      }
+      #qrcode {
+        width: 160px; height: 160px; padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container" role="main">
+
+  <!-- HALAMAN UTAMA -->
+  <section id="homePage" class="page active" tabindex="0" aria-label="Pilih Layanan Utama">
+    <h1>⚡ CiaaTopUp</h1>
+    <h2>Pilih Layanan Utama</h2>
+
+    <div class="dark-panel" tabindex="0">
+      <div class="card" tabindex="0" role="button" aria-pressed="false" aria-label="Top Up Produk Digital"
+           onclick="showPage('categoryPage')" onkeypress="if(event.key==='Enter')showPage('categoryPage')">
+        <div class="card-icon">📱</div>
+        <div>
+          <strong>Top Up Produk Digital</strong>
+          <small>Isi pulsa, paket data, token listrik, saldo e-money, voucher game, dan lainnya dengan cepat.</small>
+        </div>
+      </div>
+      <div class="card" tabindex="0" role="button" aria-pressed="false" aria-label="Produk Lainya"
+           onclick="alert('Produk lain nya order manual ke owner.')" onkeypress="if(event.key==='Enter')alert('Produk lain nya order manual ke owner.')">
+        <div class="card-icon">📦</div>
+        <div>
+          <strong>Produk Lainya</strong>
+          <small>Produk lain nya order manual ke owner.</small>
+        </div>
+      </div>
+    </div>
+
+    <button class="primary" type="button" onclick="checkAdminLogin()">Buka Admin Panel</button>
+  </section>
+
+  <!-- PILIH KATEGORI -->
+  <section id="categoryPage" class="page" tabindex="0" aria-label="Pilih Kategori Top Up Produk Digital">
+    <nav class="breadcrumbs">
+      <span role="link" tabindex="0" onclick="showPage('homePage')" onkeypress="if(event.key==='Enter')showPage('homePage')">&larr; Beranda</span>
+    </nav>
+    <h1>Top Up Produk Digital</h1>
+    <h2>Pilih Kategori</h2>
+
+    <div class="category-grid" id="categoryGrid" aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  <!-- DAFTAR PRODUK -->
+  <section id="productsPage" class="page" tabindex="0" aria-label="Daftar Produk" >
+    <nav class="breadcrumbs">
+      <span role="link" tabindex="0" onclick="showPage('homePage')" onkeypress="if(event.key==='Enter')showPage('homePage')">&larr; Beranda</span> &nbsp;&raquo;&nbsp; 
+      <span role="link" tabindex="0" id="breadcrumbCategory" style="color:#6e5fe6;"></span>
+    </nav>
+    <h2 id="productsTitle" style="margin-bottom: 10px;"></h2>
+    <div class="products-list" id="productsList" tabindex="0" aria-live="polite" aria-atomic="true"></div>
+    <button class="secondary" type="button" onclick="showPage('categoryPage')">Kembali ke Kategori</button>
+  </section>
+
+  <!-- LOGIN ADMIN -->
+  <section id="adminLoginPage" class="page" tabindex="0" aria-label="Login Admin Panel">
+    <div class="login-box" role="form" aria-live="assertive" aria-atomic="true">
+      <h2>Login Admin</h2>
+      <div id="loginError" class="error-message" role="alert">Username atau password salah!</div>
+      <input type="text" id="loginUsername" aria-label="Username" placeholder="Username" autofocus />
+      <input type="password" id="loginPassword" aria-label="Password" placeholder="Password" />
+      <button class="primary" type="button" onclick="attemptLogin()">Login</button>
+      <button class="secondary" type="button" onclick="showPage('homePage')">Batal</button>
+    </div>
+  </section>
+
+  <!-- ADMIN PANEL -->
+  <section id="adminPage" class="page" tabindex="0" aria-label="Admin Panel">
+    <div class="admin-panel">
+      <h2>🛠️ Admin Panel</h2>
+      <button class="logout" type="button" onclick="logoutAdmin()" aria-label="Logout Admin Panel">Logout</button>
+
+      <form id="adminForm">
+        <label for="adminNamaProduk">Nama Produk *</label>
+        <input type="text" id="adminNamaProduk" name="adminNamaProduk" placeholder="Masukkan nama produk" required />
+
+        <label for="adminKategoriProduk">Kategori Produk *</label>
+        <select id="adminKategoriProduk" name="adminKategoriProduk" required></select>
+
+        <label for="adminDeskripsiSingkat">Deskripsi Singkat</label>
+        <input type="text" id="adminDeskripsiSingkat" name="adminDeskripsiSingkat" placeholder="Deskripsi singkat produk" />
+
+        <label for="adminDeskripsiLengkap">Deskripsi Lengkap</label>
+        <textarea id="adminDeskripsiLengkap" name="adminDeskripsiLengkap" rows="4" placeholder="Deskripsi lengkap produk"></textarea>
+
+        <label for="adminHargaProduk">Harga (Rp) *</label>
+        <input type="number" id="adminHargaProduk" name="adminHargaProduk" placeholder="Contoh: 50000" min="1" required />
+
+        <label for="adminURLGambar">URL Gambar</label>
+        <input type="url" id="adminURLGambar" name="adminURLGambar" placeholder="https://example.com/image.jpg" />
+
+        <button type="submit" class="primary" style="margin-top: 16px;">Tambah Produk</button>
+      </form>
+
+      <h3>Daftar Produk</h3>
+      <div id="adminProductsList" style="max-height:300px; overflow-y:auto;"></div>
+    </div>
+  </section>
+
+  <!-- HALAMAN PEMBAYARAN -->
+  <section id="paymentPage" class="page" tabindex="0" aria-label="Halaman Pembayaran">
+    <nav class="breadcrumbs">
+      <span role="link" tabindex="0" onclick="returnToProducts()" onkeypress="if(event.key==='Enter')returnToProducts()">&larr; Kembali ke Produk</span>
+    </nav>
+    <div class="payment-panel">
+      <h1 class="payment-title">Selesaikan Pembayaran</h1>
+      <p>Scan kode QR di bawah ini menggunakan aplikasi pembayaran favoritmu.</p>
+      <div id="qrcode"></div>
+      <p class="payment-info">Total Pembayaran: <strong id="paymentTotal">Rp 0</strong></p>
+      <p class="payment-info">ID Deposit: <strong id="paymentDepositId">-</strong></p>
+      <p class="countdown" aria-live="polite" id="countdownTimer">59:59</p>
+      <div class="status-box" id="paymentStatus">Mengecek status pembayaran (pending)...</div>
+      <button class="secondary" style="margin-top: 20px;" onclick="showPage('homePage')">Kembali ke Beranda</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  // ----- DATA  -----
+  const LS_PRODUCTS_KEY = "ciaatopup_products";
+  const LS_ADMIN_LOGIN = "ciaatopup_admin_loggedin";
+
+  const adminUsername = "admin";
+  const adminPassword = "admin123";
+
+  const categories = [
+    { id: "aktivasiPerdana", name: "Aktivasi Perdana", icon: "📶" },
+    { id: "aktivasiVoucher", name: "Aktivasi Voucher", icon: "🎟️" },
+    { id: "akunPremium", name: "Akun Premium", icon: "⭐" },
+    { id: "chinaTopup", name: "China TOPUP", icon: "🇨🇳" },
+    { id: "dataInternet", name: "Data Internet", icon: "🌐" },
+    { id: "eMoney", name: "E-Money", icon: "💳" },
+    { id: "games", name: "Games", icon: "🎮" },
+    { id: "malaysiaTopup", name: "Malaysia TOPUP", icon: "🇲🇾" },
+    { id: "masaAktif", name: "Masa Aktif", icon: "⏳" },
+    { id: "pln", name: "PLN", icon: "💡" }
+  ];
+
+  const defaultProducts = {
+    aktivasiPerdana: [
+      { id: 'xl5gb', name: 'Perdana XL 5GB', price: 30000, shortDesc: 'Kartu perdana XL kuota 5GB', longDesc: 'Kartu perdana XL kuota 5GB masa aktif 30 hari', image: '' },
+      { id: 'tsel10gb', name: 'Perdana Telkomsel 10GB', price: 50000, shortDesc: 'Kartu perdana Telkomsel 10GB', longDesc: 'Kartu perdana Telkomsel kuota 10GB masa aktif 30 hari', image: '' }
+    ],
+    aktivasiVoucher: [
+      { id: 'voucherGp50k', name: 'Voucher Google Play 50K', price: 54000, shortDesc: 'Voucher Google Play Rp50.000', longDesc: 'Voucher Google Play dengan nominal Rp50.000', image: '' },
+      { id: 'voucherSteam100k', name: 'Voucher Steam 100K', price: 103000, shortDesc: 'Voucher Steam Rp100.000', longDesc: 'Voucher Steam dengan nominal Rp100.000', image: '' }
+    ],
+    akunPremium: [
+      { id: 'netflix1bln', name: 'Netflix 1 Bulan', price: 54000, shortDesc: 'Akun Netflix Premium 1 bulan', longDesc: 'Akses penuh Netflix Premium selama 1 bulan', image: '' },
+      { id: 'spotify1bln', name: 'Spotify Premium 1 Bulan', price: 50000, shortDesc: 'Akun Spotify Premium 1 bulan', longDesc: 'Akses Spotify Premium selama 1 bulan', image: '' }
+    ],
+    chinaTopup: [
+      { id: 'china1gb', name: 'Kuota China 1GB', price: 150000, shortDesc: 'Paket data China 1GB', longDesc: 'Paket data China dengan kuota 1GB', image: '' },
+      { id: 'china5gb', name: 'Kuota China 5GB', price: 600000, shortDesc: 'Paket data China 5GB', longDesc: 'Paket data China dengan kuota 5GB', image: '' }
+    ],
+    dataInternet: [
+      { id: 'indosat5gb', name: 'Indosat 5GB', price: 45000, shortDesc: 'Paket data Indosat 5GB', longDesc: 'Paket data Indosat dengan kuota 5GB', image: '' },
+      { id: 'tsel10gb', name: 'Telkomsel 10GB', price: 90000, shortDesc: 'Paket data Telkomsel 10GB', longDesc: 'Paket data Telkomsel dengan kuota 10GB', image: '' },
+      { id: 'xl7gb', name: 'XL 7GB', price: 70000, shortDesc: 'Paket data XL 7GB', longDesc: 'Paket data XL dengan kuota 7GB', image: '' }
+    ],
+    eMoney: [
+      { id: 'ovo50k', name: 'OVO Saldo Rp50.000', price: 52500, shortDesc: 'Top Up saldo OVO Rp50.000', longDesc: 'Top up saldo OVO dengan nominal Rp50.000', image: '' },
+      { id: 'gopay100k', name: 'Gopay Saldo Rp100.000', price: 103000, shortDesc: 'Top Up saldo Gopay Rp100.000', longDesc: 'Top up saldo Gopay dengan nominal Rp100.000', image: '' }
+    ],
+    games: [
+      { id: 'ml70', name: 'Mobile Legends 70 Diamond', price: 48000, shortDesc: 'Top up Mobile Legends 70 diamond', longDesc: 'Top up diamond Mobile Legends 70 pcs', image: '' },
+      { id: 'pubg140', name: 'PUBG UC 140', price: 89000, shortDesc: 'Top up PUBG UC 140', longDesc: 'Top up UC PUBG sebanyak 140', image: '' },
+      { id: 'ff75', name: 'Free Fire 75 Diamond', price: 47000, shortDesc: 'Top up Free Fire 75 diamond', longDesc: 'Top up diamond Free Fire sebanyak 75', image: '' }
+    ],
+    malaysiaTopup: [
+      { id: 'maxis5gb', name: 'Maxis 5GB', price: 50000, shortDesc: 'Paket data Maxis Malaysia 5GB', longDesc: 'Paket data Maxis Malaysia kuota 5GB', image: '' },
+      { id: 'digi10gb', name: 'Digi 10GB', price: 90000, shortDesc: 'Paket data Digi Malaysia 10GB', longDesc: 'Paket data Digi Malaysia kuota 10GB', image: '' }
+    ],
+    masaAktif: [
+      { id: 'aktif7hari', name: 'Tambah Masa Aktif 7 Hari', price: 7000, shortDesc: 'Memperpanjang masa aktif 7 hari', longDesc: 'Memperpanjang masa aktif selama 7 hari', image: '' },
+      { id: 'aktif30hari', name: 'Tambah Masa Aktif 30 Hari', price: 20000, shortDesc: 'Memperpanjang masa aktif 30 hari', longDesc: 'Memperpanjang masa aktif selama 30 hari', image: '' }
+    ],
+    pln: [
+      { id: 'pln20k', name: 'Token PLN Rp20.000', price: 21000, shortDesc: 'Token listrik PLN Rp20.000', longDesc: 'Token listrik PLN dengan nominal Rp20.000', image: '' },
+      { id: 'pln50k', name: 'Token PLN Rp50.000', price: 52000, shortDesc: 'Token listrik PLN Rp50.000', longDesc: 'Token listrik PLN dengan nominal Rp50.000', image: '' },
+      { id: 'pln100k', name: 'Token PLN Rp100.000', price: 103000, shortDesc: 'Token listrik PLN Rp100.000', longDesc: 'Token listrik PLN dengan nominal Rp100.000', image: '' }
+    ],
+  };
+
+  // Ambil produk di localStorage atau pakai default
+  function getStoredProducts(){
+    const stored = localStorage.getItem(LS_PRODUCTS_KEY);
+    if(stored){
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return JSON.parse(JSON.stringify(defaultProducts));
+      }
+    }
+    return JSON.parse(JSON.stringify(defaultProducts));
+  }
+
+  // Variabel produk
+  let products = getStoredProducts();
+
+  // Simpan produk ke localStorage
+  function saveProducts(){
+    localStorage.setItem(LS_PRODUCTS_KEY, JSON.stringify(products));
+  }
+
+  // Cek login admin
+  function isAdminLoggedIn(){
+    return localStorage.getItem(LS_ADMIN_LOGIN) === "true";
+  }
+
+  // Simpan status login
+  function setAdminLoggedIn(value){
+    localStorage.setItem(LS_ADMIN_LOGIN, value ? "true" : "false");
+  }
+
+  // Periksa login ketika buka admin panel
+  function checkAdminLogin(){
+    if(isAdminLoggedIn()){
+      showAdminPanel();
+    } else {
+      showPage('adminLoginPage');
+      clearLoginFields();
+    }
+  }
+
+  // Clear input login
+  function clearLoginFields(){
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginUsername').focus();
+  }
+
+  // Attempt login admin
+  function attemptLogin(){
+    const user = document.getElementById('loginUsername').value.trim();
+    const pass = document.getElementById('loginPassword').value.trim();
+    const errorEl = document.getElementById('loginError');
+
+    if(user === adminUsername && pass === adminPassword){
+      setAdminLoggedIn(true);
+      errorEl.style.display = 'none';
+      showAdminPanel();
+    } else {
+      errorEl.style.display = 'block';
+    }
+  }
+
+  // Logout admin
+  function logoutAdmin(){
+    setAdminLoggedIn(false);
+    alert('Anda berhasil logout.');
+    showPage('homePage');
+  }
+
+  // Tombol hapus produk admin
+  function deleteProduct(catId, prodId){
+    if(!confirm('Hapus produk ini?')) return;
+    products[catId] = products[catId].filter(p => p.id !== prodId);
+    saveProducts();
+    showAdminPanel();
+  }
+
+  // Tampilkan admin panel lengkap dengan data produk & kategori dropdown
+  function showAdminPanel(){
+    fillAdminCategoryDropdown();
+    fillAdminProductList();
+    clearAdminForm();
+    showPage('adminPage');
+  }
+
+  // Isi dropdown kategori di admin panel
+  function fillAdminCategoryDropdown(){
+    const select = document.getElementById('adminKategoriProduk');
+    select.innerHTML = '';
+    categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = cat.name;
+      select.appendChild(opt);
+    });
+  }
+
+  // List produk admin dengan tombol hapus
+  function fillAdminProductList(){
+    const listContainer = document.getElementById('adminProductsList');
+    listContainer.innerHTML = '';
+
+    categories.forEach(cat => {
+      if(products[cat.id] && products[cat.id].length){
+        const catTitle = document.createElement('h4');
+        catTitle.textContent = cat.name;
+        listContainer.appendChild(catTitle);
+        products[cat.id].forEach(prod => {
+          const prodDiv = document.createElement('div');
+          prodDiv.className = 'product-item';
+          prodDiv.innerHTML = `
+            <span>${prod.name}</span>
+            <span class="product-price">Rp ${prod.price.toLocaleString('id-ID')}</span>
+            <button class="delete-btn" aria-label="Hapus produk ${prod.name}">Hapus</button>
+          `;
+          prodDiv.querySelector('.delete-btn').addEventListener('click', () => {
+            deleteProduct(cat.id, prod.id);
+          });
+          listContainer.appendChild(prodDiv);
+        });
+      }
+    });
+  }
+
+  // Clear form input admin setelah submit
+  function clearAdminForm(){
+    document.getElementById('adminForm').reset();
+  }
+
+  // ===== Navigasi antar halaman =====
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(page => { page.classList.remove('active'); });
+    const page = document.getElementById(id);
+    page.classList.add('active');
+    page.focus();
+  }
+
+  // ===== Build dan tampilkan kategori =====
+  const categoryGrid = document.getElementById('categoryGrid');
+  categories.forEach(cat => {
+    const btn = document.createElement('div');
+    btn.className = 'category-button';
+    btn.textContent = cat.name;
+    btn.tabIndex = 0;
+    btn.title = cat.name;
+    btn.setAttribute('aria-label', `Pilih kategori ${cat.name}`);
+    btn.addEventListener('click', () => openCategory(cat.id));
+    btn.addEventListener('keypress', (e) => { if(e.key === 'Enter') openCategory(cat.id); });
+    categoryGrid.appendChild(btn);
+  });
+
+  // Simpan kategori dan produk terpilih
+  let selectedCategoryId = null;
+  let selectedProduct = null;
+
+  // Breadcrumb category text
+  const breadcrumbCategory = document.getElementById('breadcrumbCategory');
+
+  // Open category & tampilkan produk kategori tsb
+  function openCategory(catId) {
+    selectedCategoryId = catId;
+    breadcrumbCategory.textContent = categories.find(c => c.id===catId).name;
+
+    const productListEl = document.getElementById('productsList');
+    productListEl.innerHTML = '';
+
+    if(!products[catId] || products[catId].length === 0){
+      productListEl.innerHTML = '<p>Tidak ada produk di kategori ini.</p>';
+    } else {
+      products[catId].forEach(p => {
+        const prodEl = document.createElement('div');
+        prodEl.className = 'product-item';
+        prodEl.tabIndex = 0;
+        prodEl.setAttribute('title', p.longDesc || '');
+        prodEl.innerHTML = `<span>${p.name}</span><span class="product-price">Rp ${p.price.toLocaleString('id-ID')}</span>`;
+        prodEl.addEventListener('click', () => {
+          selectedProduct = p;
+          openPayment();
+        });
+        prodEl.addEventListener('keypress', e => {
+          if(e.key === 'Enter'){
+            selectedProduct = p;
+            openPayment();
+          }
+        });
+        productListEl.appendChild(prodEl);
+      });
+    }
+
+    document.getElementById('productsTitle').textContent = categories.find(c => c.id === catId).name;
+    showPage('productsPage');
+  }
+
+  // Submit form tambah produk admin
+  document.getElementById('adminForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const nama = e.target.adminNamaProduk.value.trim();
+    const kategori = e.target.adminKategoriProduk.value;
+    const shortDesc = e.target.adminDeskripsiSingkat.value.trim();
+    const longDesc = e.target.adminDeskripsiLengkap.value.trim();
+    const harga = parseInt(e.target.adminHargaProduk.value);
+    const gambar = e.target.adminURLGambar.value.trim();
+
+    if(!nama || !kategori || !harga || harga <= 0){
+      alert('Mohon isi data dengan benar, nama produk, kategori dan harga harus diisi.');
+      return;
+    }
+
+    const id = nama.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+
+    if(!products[kategori]) products[kategori] = [];
+    products[kategori].push({ id, name: nama, price: harga, shortDesc, longDesc, image: gambar });
+
+    saveProducts();
+    alert('Produk berhasil ditambahkan!');
+
+    e.target.reset();
+    fillAdminProductList();
+  });
+
+  // ===== Pembayaran QR =====
+  let qr;
+  const qrcodeContainer = document.getElementById('qrcode');
+  const paymentTotalEl = document.getElementById('paymentTotal');
+  const paymentDepositIdEl = document.getElementById('paymentDepositId');
+  const countdownTimerEl = document.getElementById('countdownTimer');
+  const paymentStatusEl = document.getElementById('paymentStatus');
+
+  let paymentTimerId;
+  let paymentTimeLeft = 3599;
+
+  function resetTimer(){
+    clearInterval(paymentTimerId);
+    paymentTimeLeft = 3599;
+    updateTimerText();
+    paymentTimerId = setInterval(() => {
+      paymentTimeLeft--;
+      updateTimerText();
+      if(paymentTimeLeft <= 0){
+        clearInterval(paymentTimerId);
+        paymentStatusEl.textContent = 'Status pembayaran expired.';
+        countdownTimerEl.textContent = 'Expired';
+      }
+    }, 1000);
+  }
+  function updateTimerText(){
+    const m = Math.floor(paymentTimeLeft / 60);
+    const s = paymentTimeLeft % 60;
+    countdownTimerEl.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  }
+
+  function openPayment(){
+    if(!selectedProduct){
+      alert('Pilih produk dulu!');
+      showPage('productsPage');
+      return;
+    }
+    paymentTotalEl.textContent = `Rp ${selectedProduct.price.toLocaleString('id-ID')}`;
+    const depositId = 'vp' + Math.random().toString(36).slice(2,18);
+
+    paymentDepositIdEl.textContent = depositId;
+    paymentStatusEl.textContent = 'Mengecek status pembayaran (pending)...';
+
+    qrcodeContainer.innerHTML = '';
+    qr = new QRCode(qrcodeContainer, {
+      text: `https://example-payment.com/pay?product=${selectedProduct.id}&price=${selectedProduct.price}&deposit=${depositId}`,
+      width: 200,
+      height: 200,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.H
+    });
+
+    resetTimer();
+
+    showPage('paymentPage');
+  }
+
+  function returnToProducts(){
+    if(selectedCategoryId){
+      openCategory(selectedCategoryId);
+    } else {
+      showPage('categoryPage');
+    }
+  }
+
+  // Accessibility keyboard nav for clickable divs
+  document.querySelectorAll('[tabindex="0"]').forEach(elem => {
+    elem.addEventListener('keydown', e => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        elem.click();
+      }
+    });
+  });
+
+</script>
+</body>
+</html>
